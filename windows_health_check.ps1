@@ -9,7 +9,7 @@
     geplande taken, VSS, en meer.
 
 .VERSION
-    1.1
+    1.2
 
 .AUTHOR
     Mark Biesma
@@ -116,11 +116,23 @@ $services = Get-Service |
 Add-Section "Services (Auto Start - Not Running)" $services
 
 # 10. Anti-virus Status
-$av = Get-CimInstance -Namespace "root\SecurityCenter2" -ClassName "AntiVirusProduct" -ErrorAction SilentlyContinue
-$avStatus = if ($av) {
-    $av | Select-Object displayName, productState, pathToSignedProductExe | Out-String
-} else {
-    "Geen antivirus gevonden of toegang geweigerd tot SecurityCenter2."
+$avStatus = ""
+try {
+    # Probeer Defender
+    $defender = Get-MpComputerStatus -ErrorAction Stop
+    $avStatus = $defender | Select-Object AMServiceEnabled, AntivirusEnabled, RealTimeProtectionEnabled, SignatureUpdateTime | Out-String
+} catch {
+    try {
+        # Fallback naar SecurityCenter2 (alleen op clients)
+        $av = Get-CimInstance -Namespace "root\SecurityCenter2" -ClassName "AntiVirusProduct" -ErrorAction Stop
+        if ($av) {
+            $avStatus = $av | Select-Object displayName, productState, pathToSignedProductExe | Out-String
+        } else {
+            $avStatus = "Geen antivirus gevonden in SecurityCenter2."
+        }
+    } catch {
+        $avStatus = "Geen antivirus gevonden of toegang geweigerd. Fout: $($_.Exception.Message)"
+    }
 }
 Add-Section "Anti-virus Status" $avStatus
 
