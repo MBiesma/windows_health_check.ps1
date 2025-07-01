@@ -9,7 +9,7 @@
     geplande taken, VSS, en meer.
 
 .VERSION
-    1.0
+    1.1
 
 .AUTHOR
     Mark Biesma
@@ -187,3 +187,5 @@ Add-Section "Chkdsk Analyse (read-only)" $chk
 
 # Einde
 Write-Host "`nHealth check voltooid. Logbestand opgeslagen als:`n$logFile"
+
+Add-Content -Path $logFile -Value "`nHealth check succesvol voltooid op $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
