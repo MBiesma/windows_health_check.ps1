@@ -9,7 +9,7 @@
     geplande taken, VSS, en meer.
 
 .VERSION
-    1.2
+    1.2.1
 
 .AUTHOR
     Mark Biesma
@@ -192,7 +192,7 @@ Add-Section "SFC Scan (read-only)" $sfc
 # 19. Chkdsk Analyse (read-only)
 $chk = Get-Volume | ForEach-Object {
     if ($_.DriveLetter) {
-        "Volume: $($_.DriveLetter)`n" + (cmd /c "chkdsk $($_.DriveLetter):") + "`n"
+        "Volume: $($_.DriveLetter)`n" + (cmd /c "chkdsk $($_.DriveLetter): /scan") + "`n"
     }
 } | Out-String
 Add-Section "Chkdsk Analyse (read-only)" $chk
